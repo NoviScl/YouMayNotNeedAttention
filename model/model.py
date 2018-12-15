@@ -17,13 +17,14 @@ class RNNModel(nn.Module):
         self.encoder = nn.Embedding(ntoken, int(ninp/2))
         assert rnn_type in ['LSTM'], 'RNN type is not supported'
         if rnn_type == 'LSTM':
+            # in the paper: ninp = nhid (but I think nhid can be any other value as well)
             self.rnns = [torch.nn.LSTM(ninp, nhid, 1, dropout=0) for l in range(nlayers)]
 
         #print(self.rnns)
         self.rnns = torch.nn.ModuleList(self.rnns)
-        self.decoder = nn.Linear(nhid, ntoken)
+        self.decoder = nn.Linear(int(ninp/2), ntoken)
 
-        self.combiner = nn.Linear(ninp, int(ninp/2))
+        self.combiner = nn.Linear(nhid, int(ninp/2))
 
         # Optionally tie weights as in:
         # "Using the Output Embedding to Improve Language Models" (Press & Wolf 2016)
